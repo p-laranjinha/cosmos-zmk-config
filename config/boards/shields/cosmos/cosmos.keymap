@@ -34,7 +34,7 @@
                 &kp GRAVE &kp Z     &kp X     &kp C     &kp V     &kp B     &kp F15            &kp C_VOL_DN &kp N     &kp M     &kp COMMA &kp DOT   &kp FSLH  &kp RALT
                                     &kp LGUI  &mo_tog FN FN                                                                     &kp LBKT  &kp RBKT
                                                         &kp LALT  &kp LSHFT &kp LCTRL          &kp RCTRL    &kp RSHFT &kp RGUI
-                                                                  &kp BSPC  &kp DEL            &kp ENTER    &kp SPACE
+                                                                  &kp SPACE &kp ENTER          &kp BSPC     &kp DEL
             >;
         };
 
