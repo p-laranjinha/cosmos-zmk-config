@@ -66,8 +66,8 @@
                 &trans    &kp LSHFT &kp A     &kp W     &kp D     &kp F     &kp G              &trans    &trans    &trans    &trans    &trans    &trans    &trans
                 &trans    &kp LCTRL &kp Z     &kp S     &kp C     &kp V     &kp B              &trans    &trans    &trans    &trans    &trans    &trans    &trans
                                     &trans    &kp X                                                                         &trans    &trans
-                                                        &trans    &kp SPACE &kp ENTER          &trans    &trans    &trans
-                                                                  &trans    &trans             &trans    &trans
+                                                        &trans    &kp SPACE &mo DEFAULT        &trans    &trans    &trans
+                                                                  &td_fn    &trans             &trans    &trans
             >;
         };
 
