@@ -39,9 +39,16 @@
             tapping-term-ms = <200>;
             bindings = <&to NUMPAD>, <&to DEFAULT>;
         };
-
     };
-    
+
+    macros {
+        m_game_def: macro-game-mo-default {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&macro_press &to DEFAULT>, <&macro_pause_for_release>, <&macro_release &to DEFAULT>, <&macro_tap &to GAME>;
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
@@ -66,7 +73,7 @@
                 &trans    &kp LSHFT &kp A     &kp W     &kp D     &kp F     &kp G              &trans    &trans    &trans    &trans    &trans    &trans    &trans
                 &trans    &kp LCTRL &kp Z     &kp S     &kp C     &kp V     &kp B              &trans    &trans    &trans    &trans    &trans    &trans    &trans
                                     &trans    &kp X                                                                         &trans    &trans
-                                                        &trans    &kp SPACE &mo DEFAULT        &trans    &trans    &trans
+                                                        &trans    &kp SPACE &m_game_def        &trans    &trans    &trans
                                                                   &td_fn    &trans             &trans    &trans
             >;
         };
