@@ -12,40 +12,52 @@
 
 / {
     behaviors {
+        // This tap-dance makes it that a key on the first press makes the
+        //  keyboard restart, but by tapping it 5 times (to its hard to do by
+        //  mistake) it goes into the bootloader mode.
         td_reset: tap-dance-reset-bootloader {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
-            tapping-term-ms = <200>;
+            tapping-term-ms = <1000>;
             bindings = <&sys_reset>, <&none>, <&none>, <&none>, <&bootloader>;
         };
 
+
+        // This tap-dance temporarily moves to the fn layer on hold, and
+        //  permanently moves on double tap. Pressing it once while in the fn
+        //  layer exits it.
+        // I didn't use mod-tap, because I didn't want an accidental single
+        //  press to go to the fn layer.
         td_fn: tap-dance-fn {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
-            tapping-term-ms = <200>;
+            tapping-term-ms = <1000>;
             bindings = <&mo FN>, <&tog FN>;
         };
 
+        // These tap-dances go to a layer on the first press, but go to the
+        //  default layer on double tap.
         td_game: tap-dance-game {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
-            tapping-term-ms = <200>;
+            tapping-term-ms = <1000>;
             bindings = <&to GAME>, <&to DEFAULT>;
         };
-
         td_numpad: tap-dance-numpad {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
-            tapping-term-ms = <200>;
+            tapping-term-ms = <1000>;
             bindings = <&to NUMPAD>, <&to DEFAULT>;
         };
 
+        // This macro and tap-dance make it so that in the game layer, I can
+        //  temporarily go to the default layer by holding a key, or
+        //  permanently by double tapping it.
         m_game_def: macro-game-mo-default {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
             bindings = <&macro_press &to DEFAULT>, <&macro_pause_for_release>, <&macro_release &to DEFAULT>, <&macro_tap &to GAME>;
         };
-
         td_game_def: tap-dance-game-mo-default {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
@@ -53,12 +65,36 @@
             bindings = <&m_game_def>, <&to DEFAULT>;
         };
 
-        mt_mo_kp: mod-tap-mo-kp {
+        // This tap-dance is so that a key on first press/hold sends right
+        //  shift, but on double tap/tap and hold it moves to the fn layer
+        //  while the key is held.
+        td_rsft_fn: tap-dance-shift-fn {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <1000>;
+            bindings = <&kp RSHFT>, <&mo FN>;
+        };
+
+        // This mod-tap selects a bluetooth device on tap, but disconnects it
+        //  on hold for 3s.
+        // I have to use macros because hold-tap doesn't accept bindings with
+        //  parameters.
+        m_bt_disc: macro-bluetooth-disconnect {
+            compatible = "zmk,behavior-macro-one-param";
+            #binding-cells = <1>;
+            bindings = <&macro_param_1to2>, <&macro_tap &bt BT_DISC MACRO_PLACEHOLDER>;
+        };
+        m_bt_sel: macro-bluetooth-select {
+            compatible = "zmk,behavior-macro-one-param";
+            #binding-cells = <1>;
+            bindings = <&macro_param_1to2>, <&macro_tap &bt BT_SEL MACRO_PLACEHOLDER>;
+        };
+        mt_bt: mod-tap-bluetooth {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
-            flavor = "hold-preferred";
-            tapping-term-ms = <200>;
-            bindings = <&mo>, <&kp>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <3000>;
+            bindings = <&m_bt_disc>, <&m_bt_sel>;
         };
     };
 
@@ -67,61 +103,61 @@
 
         default_layer {
             bindings = <
-//        ┌─────┬────┬──────┬────────┬──────┬──────┬────────────┐   ┌──────┬──────┬──────┬────┬─────┬─────┬──────┐
-//        │ f1  │ f2 │  f3  │   f4   │  f5  │  f6  │  &td_game  │   │ pscr │  f7  │  f8  │ f9 │ f10 │ f11 │ f12  │
-//        ├─────┼────┼──────┼────────┼──────┼──────┼────────────┤   ├──────┼──────┼──────┼────┼─────┼─────┼──────┤
-//        │  `  │ 1  │  2   │   3    │  4   │  5   │ &td_numpad │   │ mute │  6   │  7   │ 8  │  9  │  0  │ ralt │
-//        ├─────┼────┼──────┼────────┼──────┼──────┼────────────┤   ├──────┼──────┼──────┼────┼─────┼─────┼──────┤
-//        │ tab │ Q  │  W   │   E    │  R   │  T   │    f13     │   │ play │  Y   │  U   │ I  │  O  │  P  │  \   │
-//        ├─────┼────┼──────┼────────┼──────┼──────┼────────────┤   ├──────┼──────┼──────┼────┼─────┼─────┼──────┤
-//        │ esc │ A  │  S   │   D    │  F   │  G   │    f14     │   │ volu │  H   │  J   │ K  │  L  │  ;  │  '   │
-//        ├─────┼────┼──────┼────────┼──────┼──────┼────────────┤   ├──────┼──────┼──────┼────┼─────┼─────┼──────┤
-//        │  =  │ Z  │  X   │   C    │  V   │  B   │    f15     │   │ vold │  N   │  M   │ ,  │  .  │  /  │  -   │
-//        └─────┴────┼──────┼────────┼──────┴──────┴────────────┘   └──────┴──────┴──────┼────┼─────┼─────┴──────┘
-//                   │ lgui │ &td_fn │                                                   │ [  │  ]  │
-//                   └──────┴────────┼──────┬──────┬────────────┐   ┌──────┬──────┬──────┼────┴─────┘
-//                                   │ lalt │ lsft │    lctl    │   │ rctl │ rsft │ rgui │
-//                                   └──────┼──────┼────────────┤   ├──────┼──────┼──────┘
-//                                          │ spc  │    ent     │   │ bspc │ del  │
-//                                          └──────┴────────────┘   └──────┴──────┘
-      &kp F1      &kp F2   &kp F3     &kp F4   &kp F5     &kp F6      &td_game         &kp PSCRN      &kp F7      &kp F8     &kp F9      &kp F10    &kp F11    &kp F12
-      &kp GRAVE   &kp N1   &kp N2     &kp N3   &kp N4     &kp N5      &td_numpad       &kp C_MUTE     &kp N6      &kp N7     &kp N8      &kp N9     &kp N0     &kp RALT
-      &kp TAB     &kp Q    &kp W      &kp E    &kp R      &kp T       &kp F13          &kp C_PP       &kp Y       &kp U      &kp I       &kp O      &kp P      &kp BSLH
-      &kp ESC     &kp A    &kp S      &kp D    &kp F      &kp G       &kp F14          &kp C_VOL_UP   &kp H       &kp J      &kp K       &kp L      &kp SEMI   &kp SQT
-      &kp EQUAL   &kp Z    &kp X      &kp C    &kp V      &kp B       &kp F15          &kp C_VOL_DN   &kp N       &kp M      &kp COMMA   &kp DOT    &kp FSLH   &kp MINUS
-                           &kp LGUI   &td_fn                                                                                 &kp LBKT    &kp RBKT
-                                               &kp LALT   &kp LSHFT   &kp LCTRL        &kp RCTRL      &kp RSHFT   &kp RGUI
+//        ┌─────┬────┬──────┬────────┬──────┬──────┬────────────┐   ┌──────┬─────────────┬──────┬────┬─────┬─────┬──────┐
+//        │ f1  │ f2 │  f3  │   f4   │  f5  │  f6  │  &td_game  │   │ pscr │     f7      │  f8  │ f9 │ f10 │ f11 │ f12  │
+//        ├─────┼────┼──────┼────────┼──────┼──────┼────────────┤   ├──────┼─────────────┼──────┼────┼─────┼─────┼──────┤
+//        │  `  │ 1  │  2   │   3    │  4   │  5   │ &td_numpad │   │ mute │      6      │  7   │ 8  │  9  │  0  │ ralt │
+//        ├─────┼────┼──────┼────────┼──────┼──────┼────────────┤   ├──────┼─────────────┼──────┼────┼─────┼─────┼──────┤
+//        │ tab │ Q  │  W   │   E    │  R   │  T   │    f13     │   │ play │      Y      │  U   │ I  │  O  │  P  │  \   │
+//        ├─────┼────┼──────┼────────┼──────┼──────┼────────────┤   ├──────┼─────────────┼──────┼────┼─────┼─────┼──────┤
+//        │ esc │ A  │  S   │   D    │  F   │  G   │    f14     │   │ volu │      H      │  J   │ K  │  L  │  ;  │  '   │
+//        ├─────┼────┼──────┼────────┼──────┼──────┼────────────┤   ├──────┼─────────────┼──────┼────┼─────┼─────┼──────┤
+//        │  =  │ Z  │  X   │   C    │  V   │  B   │    f15     │   │ vold │      N      │  M   │ ,  │  .  │  /  │  -   │
+//        └─────┴────┼──────┼────────┼──────┴──────┴────────────┘   └──────┴─────────────┴──────┼────┼─────┼─────┴──────┘
+//                   │ lgui │ &td_fn │                                                          │ [  │  ]  │
+//                   └──────┴────────┼──────┬──────┬────────────┐   ┌──────┬─────────────┬──────┼────┴─────┘
+//                                   │ lalt │ lsft │    lctl    │   │ rctl │ &td_rsft_fn │ rgui │
+//                                   └──────┼──────┼────────────┤   ├──────┼─────────────┼──────┘
+//                                          │ spc  │    ent     │   │ bspc │     del     │
+//                                          └──────┴────────────┘   └──────┴─────────────┘
+      &kp F1      &kp F2   &kp F3     &kp F4   &kp F5     &kp F6      &td_game         &kp PSCRN      &kp F7        &kp F8     &kp F9      &kp F10    &kp F11    &kp F12
+      &kp GRAVE   &kp N1   &kp N2     &kp N3   &kp N4     &kp N5      &td_numpad       &kp C_MUTE     &kp N6        &kp N7     &kp N8      &kp N9     &kp N0     &kp RALT
+      &kp TAB     &kp Q    &kp W      &kp E    &kp R      &kp T       &kp F13          &kp C_PP       &kp Y         &kp U      &kp I       &kp O      &kp P      &kp BSLH
+      &kp ESC     &kp A    &kp S      &kp D    &kp F      &kp G       &kp F14          &kp C_VOL_UP   &kp H         &kp J      &kp K       &kp L      &kp SEMI   &kp SQT
+      &kp EQUAL   &kp Z    &kp X      &kp C    &kp V      &kp B       &kp F15          &kp C_VOL_DN   &kp N         &kp M      &kp COMMA   &kp DOT    &kp FSLH   &kp MINUS
+                           &kp LGUI   &td_fn                                                                                   &kp LBKT    &kp RBKT
+                                               &kp LALT   &kp LSHFT   &kp LCTRL        &kp RCTRL      &td_rsft_fn   &kp RGUI
                                                           &kp SPACE   &kp ENTER        &kp BSPC       &kp DEL
             >;
         };
 
         game_layer {
             bindings = <
-//        ┌─────┬──────┬─────┬─────┬─────┬─────────────────┬──────────────┐   ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┐
-//        │     │      │     │     │     │                 │              │   │     │     │     │     │     │     │     │
-//        ├─────┼──────┼─────┼─────┼─────┼─────────────────┼──────────────┤   ├─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-//        │     │      │     │     │     │                 │              │   │     │     │     │     │     │     │     │
-//        ├─────┼──────┼─────┼─────┼─────┼─────────────────┼──────────────┤   ├─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-//        │     │  1   │  Q  │  3  │  E  │        R        │      T       │   │     │     │     │     │     │     │     │
-//        ├─────┼──────┼─────┼─────┼─────┼─────────────────┼──────────────┤   ├─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-//        │     │ lsft │  A  │  W  │  D  │        F        │      G       │   │     │     │     │     │     │     │     │
-//        ├─────┼──────┼─────┼─────┼─────┼─────────────────┼──────────────┤   ├─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-//        │     │ lctl │  Z  │  S  │  C  │        V        │      B       │   │     │     │     │     │     │     │     │
-//        └─────┴──────┼─────┼─────┼─────┴─────────────────┴──────────────┘   └─────┴─────┴─────┼─────┼─────┼─────┴─────┘
-//                     │     │  X  │                                                            │     │     │
-//                     └─────┴─────┼─────┬─────────────────┬──────────────┐   ┌─────┬─────┬─────┼─────┴─────┘
-//                                 │     │       spc       │ &td_game_def │   │     │     │     │
-//                                 └─────┼─────────────────┼──────────────┤   ├─────┼─────┼─────┘
-//                                       │ mt_mo_kp FN spc │              │   │     │     │
-//                                       └─────────────────┴──────────────┘   └─────┴─────┘
-      &trans   &trans      &trans   &trans   &trans   &trans               &trans             &trans   &trans   &trans   &trans   &trans   &trans   &trans
-      &trans   &trans      &trans   &trans   &trans   &trans               &trans             &trans   &trans   &trans   &trans   &trans   &trans   &trans
-      &trans   &kp N1      &kp Q    &kp N3   &kp E    &kp R                &kp T              &trans   &trans   &trans   &trans   &trans   &trans   &trans
-      &trans   &kp LSHFT   &kp A    &kp W    &kp D    &kp F                &kp G              &trans   &trans   &trans   &trans   &trans   &trans   &trans
-      &trans   &kp LCTRL   &kp Z    &kp S    &kp C    &kp V                &kp B              &trans   &trans   &trans   &trans   &trans   &trans   &trans
-                           &trans   &kp X                                                                                &trans   &trans
-                                             &trans   &kp SPACE            &td_game_def       &trans   &trans   &trans
-                                                      &mt_mo_kp FN SPACE   &trans             &trans   &trans
+//        ┌─────┬──────┬─────┬─────┬─────┬─────┬──────────────┐   ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┐
+//        │     │      │     │     │     │     │              │   │     │     │     │     │     │     │     │
+//        ├─────┼──────┼─────┼─────┼─────┼─────┼──────────────┤   ├─────┼─────┼─────┼─────┼─────┼─────┼─────┤
+//        │     │      │     │     │     │     │              │   │     │     │     │     │     │     │     │
+//        ├─────┼──────┼─────┼─────┼─────┼─────┼──────────────┤   ├─────┼─────┼─────┼─────┼─────┼─────┼─────┤
+//        │     │  1   │  Q  │  3  │  E  │  R  │      T       │   │     │     │     │     │     │     │     │
+//        ├─────┼──────┼─────┼─────┼─────┼─────┼──────────────┤   ├─────┼─────┼─────┼─────┼─────┼─────┼─────┤
+//        │     │ lsft │  A  │  W  │  D  │  F  │      G       │   │     │     │     │     │     │     │     │
+//        ├─────┼──────┼─────┼─────┼─────┼─────┼──────────────┤   ├─────┼─────┼─────┼─────┼─────┼─────┼─────┤
+//        │     │ lctl │  Z  │  S  │  C  │  V  │      B       │   │     │     │     │     │     │     │     │
+//        └─────┴──────┼─────┼─────┼─────┴─────┴──────────────┘   └─────┴─────┴─────┼─────┼─────┼─────┴─────┘
+//                     │     │  X  │                                                │     │     │
+//                     └─────┴─────┼─────┬─────┬──────────────┐   ┌─────┬─────┬─────┼─────┴─────┘
+//                                 │     │ spc │ &td_game_def │   │     │     │     │
+//                                 └─────┼─────┼──────────────┤   ├─────┼─────┼─────┘
+//                                       │     │              │   │     │     │
+//                                       └─────┴──────────────┘   └─────┴─────┘
+      &trans   &trans      &trans   &trans   &trans   &trans      &trans             &trans   &trans   &trans   &trans   &trans   &trans   &trans
+      &trans   &trans      &trans   &trans   &trans   &trans      &trans             &trans   &trans   &trans   &trans   &trans   &trans   &trans
+      &trans   &kp N1      &kp Q    &kp N3   &kp E    &kp R       &kp T              &trans   &trans   &trans   &trans   &trans   &trans   &trans
+      &trans   &kp LSHFT   &kp A    &kp W    &kp D    &kp F       &kp G              &trans   &trans   &trans   &trans   &trans   &trans   &trans
+      &trans   &kp LCTRL   &kp Z    &kp S    &kp C    &kp V       &kp B              &trans   &trans   &trans   &trans   &trans   &trans   &trans
+                           &trans   &kp X                                                                       &trans   &trans
+                                             &trans   &kp SPACE   &td_game_def       &trans   &trans   &trans
+                                                      &trans      &trans             &trans   &trans
             >;
         };
 
@@ -157,31 +193,31 @@
 
         fn_layer {
             bindings = <
-//        ┌───────────┬────────────────┬──────────┬──────────┬──────────┬──────────┬──────┐   ┌──────┬──────┬──────┬──────┬──────┬──────┬───────────┐
-//        │ &td_reset │ &studio_unlock │          │          │          │          │      │   │ bri+ │      │      │      │      │      │ &td_reset │
-//        ├───────────┼────────────────┼──────────┼──────────┼──────────┼──────────┼──────┤   ├──────┼──────┼──────┼──────┼──────┼──────┼───────────┤
-//        │  bt_clr   │    bt_sel 0    │ bt_sel 1 │ bt_sel 2 │ bt_sel 3 │ bt_sel 4 │      │   │ bri- │      │      │      │      │      │           │
-//        ├───────────┼────────────────┼──────────┼──────────┼──────────┼──────────┼──────┤   ├──────┼──────┼──────┼──────┼──────┼──────┼───────────┤
-//        │ out_ ble  │    out_ usb    │          │          │          │          │      │   │      │      │      │      │      │      │           │
-//        ├───────────┼────────────────┼──────────┼──────────┼──────────┼──────────┼──────┤   ├──────┼──────┼──────┼──────┼──────┼──────┼───────────┤
-//        │           │                │          │          │          │          │      │   │ next │ home │ left │  up  │ rght │ pgup │           │
-//        ├───────────┼────────────────┼──────────┼──────────┼──────────┼──────────┼──────┤   ├──────┼──────┼──────┼──────┼──────┼──────┼───────────┤
-//        │           │                │          │          │          │          │ caps │   │ prev │ end  │      │ down │      │ pgdn │           │
-//        └───────────┴────────────────┼──────────┼──────────┼──────────┴──────────┴──────┘   └──────┴──────┴──────┼──────┼──────┼──────┴───────────┘
-//                                     │          │          │                                                     │      │      │
-//                                     └──────────┴──────────┼──────────┬──────────┬──────┐   ┌──────┬──────┬──────┼──────┴──────┘
-//                                                           │          │          │      │   │      │      │      │
-//                                                           └──────────┼──────────┼──────┤   ├──────┼──────┼──────┘
-//                                                                      │          │      │   │      │      │
-//                                                                      └──────────┴──────┘   └──────┴──────┘
-      &td_reset      &studio_unlock   &trans         &trans         &trans         &trans         &trans             &kp C_BRI_UP   &trans     &trans     &trans     &trans      &trans      &td_reset
-      &bt BT_CLR     &bt BT_SEL 0     &bt BT_SEL 1   &bt BT_SEL 2   &bt BT_SEL 3   &bt BT_SEL 4   &trans             &kp C_BRI_DN   &trans     &trans     &trans     &trans      &trans      &trans
-      &out OUT_BLE   &out OUT_USB     &trans         &trans         &trans         &trans         &trans             &trans         &trans     &trans     &trans     &trans      &trans      &trans
-      &trans         &trans           &trans         &trans         &trans         &trans         &trans             &kp C_NEXT     &kp HOME   &kp LEFT   &kp UP     &kp RIGHT   &kp PG_UP   &trans
-      &trans         &trans           &trans         &trans         &trans         &trans         &kp CAPSLOCK       &kp C_PREV     &kp END    &trans     &kp DOWN   &trans      &kp PG_DN   &trans
-                                      &trans         &trans                                                                                               &trans     &trans
-                                                                    &trans         &trans         &trans             &trans         &trans     &trans
-                                                                                   &trans         &trans             &trans         &trans
+//        ┌───────────┬────────────────┬───────────┬───────────┬───────────┬───────────┬──────┐   ┌──────┬──────┬──────┬──────┬──────┬──────┬───────────┐
+//        │ &td_reset │ &studio_unlock │           │           │           │           │      │   │ bri+ │      │      │      │      │      │ &td_reset │
+//        ├───────────┼────────────────┼───────────┼───────────┼───────────┼───────────┼──────┤   ├──────┼──────┼──────┼──────┼──────┼──────┼───────────┤
+//        │  bt_clr   │   mt_bt 0 0    │ mt_bt 1 1 │ mt_bt 2 2 │ mt_bt 3 3 │ mt_bt 4 4 │      │   │ bri- │      │      │      │      │      │           │
+//        ├───────────┼────────────────┼───────────┼───────────┼───────────┼───────────┼──────┤   ├──────┼──────┼──────┼──────┼──────┼──────┼───────────┤
+//        │ out_ ble  │                │           │           │           │           │      │   │      │      │      │      │      │      │           │
+//        ├───────────┼────────────────┼───────────┼───────────┼───────────┼───────────┼──────┤   ├──────┼──────┼──────┼──────┼──────┼──────┼───────────┤
+//        │ out_ usb  │                │           │           │           │           │      │   │ next │ home │ left │  up  │ rght │ pgup │           │
+//        ├───────────┼────────────────┼───────────┼───────────┼───────────┼───────────┼──────┤   ├──────┼──────┼──────┼──────┼──────┼──────┼───────────┤
+//        │           │                │           │           │           │           │ caps │   │ prev │ end  │      │ down │      │ pgdn │           │
+//        └───────────┴────────────────┼───────────┼───────────┼───────────┴───────────┴──────┘   └──────┴──────┴──────┼──────┼──────┼──────┴───────────┘
+//                                     │           │           │                                                       │      │      │
+//                                     └───────────┴───────────┼───────────┬───────────┬──────┐   ┌──────┬──────┬──────┼──────┴──────┘
+//                                                             │           │           │      │   │      │      │      │
+//                                                             └───────────┼───────────┼──────┤   ├──────┼──────┼──────┘
+//                                                                         │           │      │   │      │      │
+//                                                                         └───────────┴──────┘   └──────┴──────┘
+      &td_reset      &studio_unlock   &trans       &trans       &trans       &trans       &trans             &kp C_BRI_UP   &trans     &trans     &trans     &trans      &trans      &td_reset
+      &bt BT_CLR     &mt_bt 0 0       &mt_bt 1 1   &mt_bt 2 2   &mt_bt 3 3   &mt_bt 4 4   &trans             &kp C_BRI_DN   &trans     &trans     &trans     &trans      &trans      &trans
+      &out OUT_BLE   &trans           &trans       &trans       &trans       &trans       &trans             &trans         &trans     &trans     &trans     &trans      &trans      &trans
+      &out OUT_USB   &trans           &trans       &trans       &trans       &trans       &trans             &kp C_NEXT     &kp HOME   &kp LEFT   &kp UP     &kp RIGHT   &kp PG_UP   &trans
+      &trans         &trans           &trans       &trans       &trans       &trans       &kp CAPSLOCK       &kp C_PREV     &kp END    &trans     &kp DOWN   &trans      &kp PG_DN   &trans
+                                      &trans       &trans                                                                                         &trans     &trans
+                                                                &trans       &trans       &trans             &trans         &trans     &trans
+                                                                             &trans       &trans             &trans         &trans
             >;
         };
     };
