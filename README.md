@@ -3,3 +3,19 @@
 Here is my ZMK config for my split keyboard. The keyboard model was made using the [Cosmos Keyboard Generator](https://ryanis.cool/cosmos/beta) and this repo uses a nix flake to setup everything required to flash the keyboard firmware.
 
 [This is what I used to figure out the pinouts of my circuit board.](https://github.com/joric/nrfmicro/wiki/Alternatives/d13718cf19bf7679fc395be6f378589cc59e0173)
+
+## How to update dependencies
+
+```bash
+nix flake update
+```
+
+Change the firmware **board** and **zephyrDepsHash** in [flake.nix](./flake.nix) to the values in [https://github.com/lilyinstarlight/zmk-nix/blob/main/nix/firmware.nix](https://github.com/lilyinstarlight/zmk-nix/blob/main/nix/firmware.nix).
+
+Change [./config/west.yml](./config/west.yml) to the values in [https://github.com/lilyinstarlight/zmk-nix/blob/main/config/west.yml](https://github.com/lilyinstarlight/zmk-nix/blob/main/config/west.yml).
+
+Run [./flash.sh](./flash.sh) or:
+
+```bash
+nix -vL run --show-trace .#flash
+```

@@ -39,10 +39,11 @@
             "_defconfig"
           ];
 
-          board = "nice_nano";
+          # Find the new board and zephyrDepsHash on:
+          #  https://github.com/lilyinstarlight/zmk-nix/blob/main/nix/firmware.nix
+          board = "nice_nano@2.0.0//zmk";
           shield = "cosmos_%PART%";
-
-          zephyrDepsHash = "sha256-YRvIo0NMn9oBYbta+ggJqjkjwMXbCgs18guek9/4Rzk=";
+          zephyrDepsHash = "sha256-bcaxECHijaUHuMcBhES+r0YCVvTOT+nX2nHP2hl4Ry4=";
 
           meta = {
             description = "ZMK firmware";

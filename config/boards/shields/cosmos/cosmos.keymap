@@ -35,19 +35,19 @@
             bindings = <&mo FN>, <&tog FN>;
         };
 
-        // These tap-dances go to a layer on the first press, but go to the
-        //  default layer on double tap.
+        // These tap-dances go to the default layer on the first press, but go
+        //  to another layer on double tap.
         td_game: tap-dance-game {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
             tapping-term-ms = <1000>;
-            bindings = <&to GAME>, <&to DEFAULT>;
+            bindings = <&to DEFAULT>, <&to GAME>;
         };
         td_numpad: tap-dance-numpad {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
             tapping-term-ms = <1000>;
-            bindings = <&to NUMPAD>, <&to DEFAULT>;
+            bindings = <&to DEFAULT>, <&to NUMPAD>;
         };
 
         // This macro and tap-dance make it so that in the game layer, I can
