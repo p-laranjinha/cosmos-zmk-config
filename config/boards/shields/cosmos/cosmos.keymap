@@ -24,7 +24,7 @@
 
 
         // This tap-dance temporarily moves to the fn layer on hold, and
-        //  permanently moves on double tap. Pressing it once while in the fn
+        //  permanently moves on triple tap. Pressing it once while in the fn
         //  layer exits it.
         // I didn't use mod-tap, because I didn't want an accidental single
         //  press to go to the fn layer.
@@ -32,7 +32,7 @@
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
             tapping-term-ms = <1000>;
-            bindings = <&mo FN>, <&tog FN>;
+            bindings = <&mo FN>, <&none>, <&tog FN>;
         };
 
         // These tap-dances go to the default layer on the first press, but go
@@ -112,7 +112,7 @@
 //        ├─────┼────┼──────┼────────┼──────┼──────┼────────────┤   ├──────┼─────────────┼──────┼────┼─────┼─────┼──────┤
 //        │ esc │ A  │  S   │   D    │  F   │  G   │    f14     │   │ volu │      H      │  J   │ K  │  L  │  ;  │  '   │
 //        ├─────┼────┼──────┼────────┼──────┼──────┼────────────┤   ├──────┼─────────────┼──────┼────┼─────┼─────┼──────┤
-//        │  =  │ Z  │  X   │   C    │  V   │  B   │    f15     │   │ vold │      N      │  M   │ ,  │  .  │  /  │  -   │
+//        │  -  │ Z  │  X   │   C    │  V   │  B   │    f15     │   │ vold │      N      │  M   │ ,  │  .  │  /  │  =   │
 //        └─────┴────┼──────┼────────┼──────┴──────┴────────────┘   └──────┴─────────────┴──────┼────┼─────┼─────┴──────┘
 //                   │ lgui │ &td_fn │                                                          │ [  │  ]  │
 //                   └──────┴────────┼──────┬──────┬────────────┐   ┌──────┬─────────────┬──────┼────┴─────┘
@@ -124,7 +124,7 @@
       &kp GRAVE   &kp N1   &kp N2     &kp N3   &kp N4     &kp N5      &td_numpad       &kp C_MUTE     &kp N6        &kp N7     &kp N8      &kp N9     &kp N0     &kp RALT
       &kp TAB     &kp Q    &kp W      &kp E    &kp R      &kp T       &kp F13          &kp C_PP       &kp Y         &kp U      &kp I       &kp O      &kp P      &kp BSLH
       &kp ESC     &kp A    &kp S      &kp D    &kp F      &kp G       &kp F14          &kp C_VOL_UP   &kp H         &kp J      &kp K       &kp L      &kp SEMI   &kp SQT
-      &kp EQUAL   &kp Z    &kp X      &kp C    &kp V      &kp B       &kp F15          &kp C_VOL_DN   &kp N         &kp M      &kp COMMA   &kp DOT    &kp FSLH   &kp MINUS
+      &kp MINUS   &kp Z    &kp X      &kp C    &kp V      &kp B       &kp F15          &kp C_VOL_DN   &kp N         &kp M      &kp COMMA   &kp DOT    &kp FSLH   &kp EQUAL
                            &kp LGUI   &td_fn                                                                                   &kp LBKT    &kp RBKT
                                                &kp LALT   &kp LSHFT   &kp LCTRL        &kp RCTRL      &td_rsft_fn   &kp RGUI
                                                           &kp SPACE   &kp ENTER        &kp BSPC       &kp DEL
@@ -193,29 +193,29 @@
 
         fn_layer {
             bindings = <
-//        ┌───────────┬────────────────┬───────────┬───────────┬───────────┬───────────┬──────┐   ┌──────┬──────┬──────┬──────┬──────┬──────┬───────────┐
-//        │ &td_reset │ &studio_unlock │           │           │           │           │      │   │ bri+ │      │      │      │      │      │ &td_reset │
-//        ├───────────┼────────────────┼───────────┼───────────┼───────────┼───────────┼──────┤   ├──────┼──────┼──────┼──────┼──────┼──────┼───────────┤
-//        │  bt_clr   │   mt_bt 0 0    │ mt_bt 1 1 │ mt_bt 2 2 │ mt_bt 3 3 │ mt_bt 4 4 │      │   │ bri- │      │      │      │      │      │           │
-//        ├───────────┼────────────────┼───────────┼───────────┼───────────┼───────────┼──────┤   ├──────┼──────┼──────┼──────┼──────┼──────┼───────────┤
-//        │ out_ ble  │                │           │           │           │           │      │   │      │      │      │      │      │      │           │
-//        ├───────────┼────────────────┼───────────┼───────────┼───────────┼───────────┼──────┤   ├──────┼──────┼──────┼──────┼──────┼──────┼───────────┤
-//        │ out_ usb  │                │           │           │           │           │      │   │ next │ home │ left │  up  │ rght │ pgup │           │
-//        ├───────────┼────────────────┼───────────┼───────────┼───────────┼───────────┼──────┤   ├──────┼──────┼──────┼──────┼──────┼──────┼───────────┤
-//        │           │                │           │           │           │           │ caps │   │ prev │ end  │      │ down │      │ pgdn │           │
-//        └───────────┴────────────────┼───────────┼───────────┼───────────┴───────────┴──────┘   └──────┴──────┴──────┼──────┼──────┼──────┴───────────┘
-//                                     │           │           │                                                       │      │      │
-//                                     └───────────┴───────────┼───────────┬───────────┬──────┐   ┌──────┬──────┬──────┼──────┴──────┘
-//                                                             │           │           │      │   │      │      │      │
-//                                                             └───────────┼───────────┼──────┤   ├──────┼──────┼──────┘
-//                                                                         │           │      │   │      │      │
-//                                                                         └───────────┴──────┘   └──────┴──────┘
+//        ┌───────────┬────────────────┬───────────┬─────────────┬───────────┬───────────┬──────┐   ┌──────┬──────┬──────┬──────┬──────┬──────┬───────────┐
+//        │ &td_reset │ &studio_unlock │           │             │           │           │      │   │ bri+ │      │      │      │      │      │ &td_reset │
+//        ├───────────┼────────────────┼───────────┼─────────────┼───────────┼───────────┼──────┤   ├──────┼──────┼──────┼──────┼──────┼──────┼───────────┤
+//        │  bt_clr   │   mt_bt 0 0    │ mt_bt 1 1 │  mt_bt 2 2  │ mt_bt 3 3 │ mt_bt 4 4 │      │   │ bri- │      │      │      │      │      │           │
+//        ├───────────┼────────────────┼───────────┼─────────────┼───────────┼───────────┼──────┤   ├──────┼──────┼──────┼──────┼──────┼──────┼───────────┤
+//        │ out_ ble  │                │           │             │           │           │      │   │      │      │      │      │      │      │           │
+//        ├───────────┼────────────────┼───────────┼─────────────┼───────────┼───────────┼──────┤   ├──────┼──────┼──────┼──────┼──────┼──────┼───────────┤
+//        │ out_ usb  │                │           │             │           │           │      │   │ next │ home │ left │  up  │ rght │ pgup │           │
+//        ├───────────┼────────────────┼───────────┼─────────────┼───────────┼───────────┼──────┤   ├──────┼──────┼──────┼──────┼──────┼──────┼───────────┤
+//        │           │                │           │             │           │           │ caps │   │ prev │ end  │      │ down │      │ pgdn │           │
+//        └───────────┴────────────────┼───────────┼─────────────┼───────────┴───────────┴──────┘   └──────┴──────┴──────┼──────┼──────┼──────┴───────────┘
+//                                     │           │ &to DEFAULT │                                                       │      │      │
+//                                     └───────────┴─────────────┼───────────┬───────────┬──────┐   ┌──────┬──────┬──────┼──────┴──────┘
+//                                                               │           │           │      │   │      │      │      │
+//                                                               └───────────┼───────────┼──────┤   ├──────┼──────┼──────┘
+//                                                                           │           │      │   │      │      │
+//                                                                           └───────────┴──────┘   └──────┴──────┘
       &td_reset      &studio_unlock   &trans       &trans       &trans       &trans       &trans             &kp C_BRI_UP   &trans     &trans     &trans     &trans      &trans      &td_reset
       &bt BT_CLR     &mt_bt 0 0       &mt_bt 1 1   &mt_bt 2 2   &mt_bt 3 3   &mt_bt 4 4   &trans             &kp C_BRI_DN   &trans     &trans     &trans     &trans      &trans      &trans
       &out OUT_BLE   &trans           &trans       &trans       &trans       &trans       &trans             &trans         &trans     &trans     &trans     &trans      &trans      &trans
       &out OUT_USB   &trans           &trans       &trans       &trans       &trans       &trans             &kp C_NEXT     &kp HOME   &kp LEFT   &kp UP     &kp RIGHT   &kp PG_UP   &trans
       &trans         &trans           &trans       &trans       &trans       &trans       &kp CAPSLOCK       &kp C_PREV     &kp END    &trans     &kp DOWN   &trans      &kp PG_DN   &trans
-                                      &trans       &trans                                                                                         &trans     &trans
+                                      &trans       &to DEFAULT                                                                                    &trans     &trans
                                                                 &trans       &trans       &trans             &trans         &trans     &trans
                                                                              &trans       &trans             &trans         &trans
             >;
